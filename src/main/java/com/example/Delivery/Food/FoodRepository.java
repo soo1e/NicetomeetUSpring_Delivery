@@ -1,35 +1,18 @@
 package com.example.Delivery.Food;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 
 @Repository
-public class FoodRepository {
-    private Map<Integer, Food> db = new HashMap<>();
-    private int id = 1;
+public interface FoodRepository extends JpaRepository<Food, Long> {
+    // Store ID로 메뉴 조회
+    List<Food> findByStoreId(int storeId);
 
-    public Food findFood(int idx) {
-        return db.get(idx);
-    }
-
-    public void save (Food food) {
-        db.put(id++, food);
-        System.out.println(food.getName());
-    }
-
-    // 모든 음식 조회
-    public List<Food> findAllFoods() {
-        // map의 value들만 모아서 arrayList로 만들기!
-        return new ArrayList<>(db.values());
-
-    }
-
-    // 음식 삭제
-    public void delete(int id) {
-        db.remove(id);
-    }
+    // 중복 데이터를 제외한 전체 메뉴와 가게 이름 조회
+    @Query("SELECT DISTINCT f FROM Food f JOIN FETCH f.store")
+    List<Food> findAllDistinctWithStoreName();
 }

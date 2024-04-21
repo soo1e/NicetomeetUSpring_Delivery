@@ -1,6 +1,8 @@
 package com.example.Delivery.Food;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +14,11 @@ public class FoodController {
 
     @Autowired
     private FoodService foodService;
+
+//    @GetMapping("/connectdb")
+//    public void makeConnection() {
+//        foodService.makeConnection();
+//    }
 
     // 잘되는지 테스트
     @RequestMapping(value = "", method = RequestMethod.GET)
@@ -35,10 +42,15 @@ public class FoodController {
 
     // 메뉴 등록
     @RequestMapping(value = "/foods", method = RequestMethod.POST)
-    public void saveProduct(@RequestBody Food food) {
-        System.out.println("POST");
-        foodService.saveFood(food);
+    public ResponseEntity<String> saveFood(@RequestBody Food food, @RequestParam("storeId") int storeId) {
+        try {
+            foodService.saveFood(food, storeId);
+            return new ResponseEntity<>("Food saved successfully", HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
+
 
     // 메뉴 삭제
     @DeleteMapping("/foods/{id}")
