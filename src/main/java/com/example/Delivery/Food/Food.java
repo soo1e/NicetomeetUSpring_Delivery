@@ -1,37 +1,42 @@
 package com.example.Delivery.Food;
 
+import com.example.Delivery.Store.Store;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import com.example.Delivery.Store.Store;
 
 @Entity
-@Table(name = "food")
 public class Food {
+
+
+    public enum Status {
+        SELLING,
+        SOLD_OUT
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long foodId;
 
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "price")
     private int price;
-
-    @Column(name = "description")
     private String description;
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "store_id")
+    @JoinColumn(name = "store_id", nullable = false)
     private Store store;
 
-    public int getId() {
-        return id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "ENUM('SELLING', 'SOLD_OUT') DEFAULT 'SELLING'")
+    private Status status;
+
+    public Long getFoodId() {
+        return foodId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setFoodId(Long foodId) {
+        this.foodId = foodId;
     }
 
     public String getName() {
@@ -58,15 +63,16 @@ public class Food {
         this.description = description;
     }
 
-    public Store getStore() {
-        return store;
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public void setStore(Store store) {
         this.store = store;
     }
 
-    public String getStoreName() {
-        return store != null ? store.getName() : "";
-    }
 }

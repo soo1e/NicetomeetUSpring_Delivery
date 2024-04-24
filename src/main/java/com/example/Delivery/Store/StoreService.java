@@ -6,12 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class StoreService {
 
-    private SpringDataJPAStoreRepository springDataJPAStoreRepository;
-    private SpringDataJPAFoodRepository springDataJPAFoodRepository;
+    private final SpringDataJPAStoreRepository springDataJPAStoreRepository;
+    private final SpringDataJPAFoodRepository springDataJPAFoodRepository;
 
     @Autowired
     public StoreService(SpringDataJPAStoreRepository springDataJPAStoreRepository, SpringDataJPAFoodRepository springDataJPAFoodRepository) {
@@ -19,7 +20,7 @@ public class StoreService {
         this.springDataJPAFoodRepository = springDataJPAFoodRepository;
     }
 
-    public Store findStore(int id) {
+    public Store findStore(Long id) {
         return springDataJPAStoreRepository.findById(id).orElse(null);
     }
 
@@ -38,23 +39,23 @@ public class StoreService {
         return springDataJPAStoreRepository.findAll();
     }
 
-    public void deleteStore(int id) {
+    public void deleteStore(Long id) {
         springDataJPAStoreRepository.deleteById(id);
     }
 
     public List<Store> findAllStoresWithMenu() {
         List<Store> stores = springDataJPAStoreRepository.findAll();
         for (Store store : stores) {
-            List<Food> menu = springDataJPAFoodRepository.findByStoreId(store.getId());
+            List<Food> menu = springDataJPAFoodRepository.findByStore_StoreId(store.getStoreId());
             store.setMenu(menu);
         }
         return stores;
     }
 
-    public Store findStoreWithMenu(int id) {
+    public Store findStoreWithMenu(Long id) {
         Store store = springDataJPAStoreRepository.findById(id).orElse(null);
         if (store != null) {
-            List<Food> menu = springDataJPAFoodRepository.findByStoreId(id);
+            List<Food> menu = springDataJPAFoodRepository.findByStore_StoreId(id);
             store.setMenu(menu);
         }
         return store;

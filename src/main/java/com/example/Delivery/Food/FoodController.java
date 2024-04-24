@@ -1,51 +1,49 @@
 package com.example.Delivery.Food;
 
+import com.example.Delivery.Store.Store;
+import com.example.Delivery.Store.StoreController;
+import com.example.Delivery.Store.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
-@Controller
-@ResponseBody
+@RestController
+@RequestMapping("/foods")
 public class FoodController {
 
+    private final FoodService foodService;
+    private final StoreService storeService;
+
     @Autowired
-    private FoodService foodService;
-
-    // 잘되는지 테스트
-    @RequestMapping(value = "", method = RequestMethod.GET)
-    public String mainFood() {
-        return "Hello!";
+    public FoodController(FoodService foodService, StoreService storeService) {
+        this.foodService = foodService;
+        this.storeService = storeService;
     }
 
-    // 음식 조회
-    @RequestMapping(value = "/foods/{id}", method = RequestMethod.GET)
-    public ResponseEntity<?> findFood(@PathVariable("id") int id) {
-        Food food = foodService.findFood(id);
-        if (food != null) {
-            return new ResponseEntity<>(food, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("조회할 음식이 없습니다.", HttpStatus.NOT_FOUND);
-        }
-    }
+
 
     // 전체 메뉴 조회
-    @GetMapping("/foods")
-    public ResponseEntity<?> findAllFoods() {
-        List<Food> foods = foodService.findAllFoods();
-        if (!foods.isEmpty()) {
-            return new ResponseEntity<>(foods, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("조회할 메뉴가 없습니다.", HttpStatus.NOT_FOUND);
-        }
+    @GetMapping
+    public ResponseEntity<List<Food>> getAllFood() {
+        List<Food> foodList = foodService.getAllFood();
+        return new ResponseEntity<>(foodList, HttpStatus.OK);
     }
 
-    // 메뉴 등록
-    @RequestMapping(value = "/foods", method = RequestMethod.POST)
-    public ResponseEntity<String> saveFood(@RequestBody Food food, @RequestParam("storeId") int storeId) {
+    // 특정 메뉴 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<Food> getFoodById(@PathVariable("id") Long id) {
+        Optional<Food> food = foodService.getFoodById(id);
+        return food.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+                .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    // 메뉴 추가
+    @RequestMapping(method = RequestMethod.POST)
+    public ResponseEntity<String> saveFood(@RequestBody Food food, @RequestParam("storeId") Long storeId) {
         try {
             foodService.saveFood(food, storeId);
             return new ResponseEntity<>("메뉴를 성공적으로 등록했습니다.", HttpStatus.CREATED);
@@ -54,15 +52,20 @@ public class FoodController {
         }
     }
 
+
+
+
+    // 메뉴 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<Food> updateFood(@PathVariable("id") Long id, @RequestBody Food updatedFood) {
+        Food modifiedFood = foodService.updateFood(id, updatedFood);
+        return new ResponseEntity<>(modifiedFood, HttpStatus.OK);
+    }
+
     // 메뉴 삭제
-    @DeleteMapping("/foods/{id}")
-    public ResponseEntity<String> deleteFood(@PathVariable("id") int id) {
-        try {
-            foodService.deleteFood(id);
-            return new ResponseEntity<>("메뉴 삭제에 성공했습니다.", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFood(@PathVariable("id") Long id) {
+        foodService.deleteFood(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
-
