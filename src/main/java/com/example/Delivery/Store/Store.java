@@ -1,34 +1,45 @@
 package com.example.Delivery.Store;
 
 import com.example.Delivery.Food.Food;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
 import java.util.List;
 
-@Entity
-@Table(name = "store")
-public class Store {
 
+@Entity
+public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "store_id")
-    private int id;
+    private Long storeId;
 
-    @Column(name = "name")
     private String name;
+    private Integer categoryId;
+    private String phoneNumber;
+    private String operatingHours;
+    private Integer minOrderAmount;
+    private Double rating;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<Food> menu;
 
+    // Constructors, getters, and setters
+    public Store() {}
 
-
-    public int getId() {
-        return id;
+    public Store(String name, Integer categoryId, String phoneNumber, String operatingHours, Integer minOrderAmount, Double rating) {
+        this.name = name;
+        this.categoryId = categoryId;
+        this.phoneNumber = phoneNumber;
+        this.operatingHours = operatingHours;
+        this.minOrderAmount = minOrderAmount;
+        this.rating = rating;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    // Getters and setters
+    public Long getStoreId() {
+        return storeId;
+    }
+
+    public void setStoreId(Long storeId) {
+        this.storeId = storeId;
     }
 
     public String getName() {
@@ -39,11 +50,50 @@ public class Store {
         this.name = name;
     }
 
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getOperatingHours() {
+        return operatingHours;
+    }
+
+    public void setOperatingHours(String operatingHours) {
+        this.operatingHours = operatingHours;
+    }
+
     public List<Food> getMenu() {
         return menu;
     }
 
+    public Integer getMinOrderAmount() {
+        return minOrderAmount;
+    }
+
+    public void setMinOrderAmount(Integer minOrderAmount) {
+        this.minOrderAmount = minOrderAmount;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
+
     public void setMenu(List<Food> menu) {
-        this.menu = menu;
     }
 }
