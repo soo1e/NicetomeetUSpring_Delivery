@@ -17,8 +17,8 @@ public class StoreController {
 
     // 전체 가게 조회
     @GetMapping
-    public ResponseEntity<List<Store>> getAllStoresWithMenu() {
-        List<Store> stores = storeService.findAllStoresWithMenu();
+    public ResponseEntity<List<Store>> getAllStoresByMenu() {
+        List<Store> stores = storeService.findAllStoresByMenu();
         return new ResponseEntity<>(stores, HttpStatus.OK);
     }
 
@@ -26,7 +26,7 @@ public class StoreController {
     // 특정 가게 조회
     @GetMapping("/{id}")
     public ResponseEntity<Store> getStoreById(@PathVariable("id") Long storeId) {
-        Store store = storeService.findStoreWithMenu(storeId);
+        Store store = storeService.findStoreByMenu(storeId);
         if (store != null) {
             return new ResponseEntity<>(store, HttpStatus.OK);
         } else {

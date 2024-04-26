@@ -43,7 +43,7 @@ public class StoreService {
         springDataJPAStoreRepository.deleteById(id);
     }
 
-    public List<Store> findAllStoresWithMenu() {
+    public List<Store> findAllStoresByMenu() {
         List<Store> stores = springDataJPAStoreRepository.findAll();
         for (Store store : stores) {
             List<Food> menu = springDataJPAFoodRepository.findByStore_StoreId(store.getStoreId());
@@ -52,7 +52,7 @@ public class StoreService {
         return stores;
     }
 
-    public Store findStoreWithMenu(Long id) {
+    public Store findStoreByMenu(Long id) {
         Store store = springDataJPAStoreRepository.findById(id).orElse(null);
         if (store != null) {
             List<Food> menu = springDataJPAFoodRepository.findByStore_StoreId(id);

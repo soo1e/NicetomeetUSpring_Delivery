@@ -31,11 +31,6 @@ public class FoodService {
         return foodRepository.findById(id);
     }
 
-    // 메뉴 추가
-    public Food addFood(Food food) {
-        return foodRepository.save(food);
-    }
-
     // 메뉴 수정
     public Food updateFood(Long id, Food updatedFood) {
         if (foodRepository.existsById(id)) {
@@ -55,6 +50,7 @@ public class FoodService {
         }
     }
 
+    // 메뉴 저장
     public void saveFood(Food food, Long storeId) {
         Store store = springDataJPAStoreRepository.findById(storeId)
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
