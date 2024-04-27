@@ -1,5 +1,6 @@
 package com.example.Delivery.Store;
 
+import com.example.Delivery.Food.FoodService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,13 @@ import java.util.Optional;
 @RequestMapping("/stores")
 public class StoreController {
 
-    @Autowired
     private StoreService storeService;
+
+    @Autowired
+    public StoreController(StoreService storeService) {
+        this.storeService = storeService;
+    }
+
 
     // 전체 가게 조회
     @GetMapping
@@ -56,13 +62,13 @@ public class StoreController {
 
     // 특정 가게 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteStore(@PathVariable("id") Long storeId) {
+    public ResponseEntity<String> deleteStore(@PathVariable("id") Long storeId) {
         Store existingStore = storeService.findStore(storeId);
         if (existingStore != null) {
             storeService.deleteStore(storeId);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("가게 삭제가 완료되었습니다");
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 ID의 가게를 찾을 수 없습니다");
         }
     }
 }

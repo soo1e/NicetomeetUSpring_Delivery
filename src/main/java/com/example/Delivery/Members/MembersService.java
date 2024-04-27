@@ -18,19 +18,15 @@ public class MembersService {
     }
 
     // 특정 멤버 조회
-    public Members getMemberById(Long id) {
-        Optional<Members> optionalMember = membersRepository.findById(id);
-        return optionalMember.orElse(null);
+    public Optional<Members> getMemberById(Long id) {
+//        Optional<Members> optionalMember = membersRepository.findById(id);
+//        return optionalMember.orElse(null);
+        return membersRepository.findById(id);
     }
 
-    // 멤버 등록
-    public Members addMember(Members member) {
-        return membersRepository.save(member);
-    }
-
-    // 멤버 삭제
-    public void deleteMember(Long id) {
-        membersRepository.deleteById(id);
+    // 멤버 저장
+    public void saveMember(Members member) {
+        membersRepository.save(member);
     }
 
     // 멤버 수정
@@ -39,7 +35,16 @@ public class MembersService {
             updatedMember.setMemberId(id);
             return membersRepository.save(updatedMember);
         } else {
-            return null;
+            throw new IllegalArgumentException("해당 id의 멤버가 존재하지 않습니다.");
+        }
+    }
+
+    // 멤버 삭제
+    public void deleteMember(Long id) {
+        if (membersRepository.existsById(id)) {
+            membersRepository.deleteById(id);
+        } else {
+            throw new IllegalArgumentException("해당 id의 멤버가 존재하지 않습니다.");
         }
     }
 }

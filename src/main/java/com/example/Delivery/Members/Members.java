@@ -49,8 +49,6 @@ public class Members {
         this.role = role;
     }
 
-    // Getters and Setters
-
     public Long getMemberId() {
         return memberId;
     }

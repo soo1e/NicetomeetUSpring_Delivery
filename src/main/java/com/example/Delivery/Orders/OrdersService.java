@@ -13,21 +13,16 @@ import java.util.Optional;
 @Service
 public class OrdersService {
 
-    @Autowired
     private SpringDataJPAOrdersRepository ordersRepository;
-
-    @Autowired
     private SpringDataJPAMembersRepository membersRepository;
 
+    @Autowired
     public OrdersService(SpringDataJPAOrdersRepository ordersRepository, SpringDataJPAMembersRepository membersRepository) {
         this.ordersRepository = ordersRepository;
         this.membersRepository = membersRepository;
     }
 
-    // 주문 생성
-    public Orders createOrder(Orders order) {
-        return ordersRepository.save(order);
-    }
+
 
     // orderId를 통한 주문 조회
     public Optional<Orders> getOrderById(int orderId) {
@@ -42,6 +37,11 @@ public class OrdersService {
     // 전체 주문 조회
     public List<Orders> getAllOrders() {
         return ordersRepository.findAll();
+    }
+
+    // 주문 생성
+    public Orders createOrder(Orders order) {
+        return ordersRepository.save(order);
     }
 
     // 주문 삭제

@@ -6,20 +6,25 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/members")
 public class MembersController {
 
-    @Autowired
     private MembersService membersService;
+
+    @Autowired
+    public void MemberController(MembersService membersService) {
+        this.membersService = membersService;
+    }
 
     // 모든 멤버 조회
     @GetMapping
     public ResponseEntity<?> getAllMembers() {
-        List<Members> members = membersService.getAllMembers();
-        if (!members.isEmpty()) {
-            return new ResponseEntity<>(members, HttpStatus.OK);
+        List<Members> membersList = membersService.getAllMembers();
+        if (!membersList.isEmpty()) {
+            return new ResponseEntity<>(membersList, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("조회할 멤버가 없습니다.", HttpStatus.NOT_FOUND);
         }
@@ -28,28 +33,22 @@ public class MembersController {
     // 특정 멤버 조회
     @GetMapping("/{id}")
     public ResponseEntity<?> getMemberById(@PathVariable("id") Long id) {
-        Members member = membersService.getMemberById(id);
-        if (member != null) {
+        Optional<Members> member = membersService.getMemberById(id);
+        if (member.isPresent()) {
             return new ResponseEntity<>(member, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("조회할 멤버가 없습니다.", HttpStatus.NOT_FOUND);        }
+            return new ResponseEntity<>("조회할 멤버가 없습니다.", HttpStatus.NOT_FOUND);
+        }
     }
 
     // 멤버 등록
     @PostMapping
-    public ResponseEntity<Members> addMember(@RequestBody Members member) {
-        Members addedMember = membersService.addMember(member);
-        return new ResponseEntity<>(addedMember, HttpStatus.CREATED);
-    }
-
-    // 멤버 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteMember(@PathVariable("id") Long id) {
+    public ResponseEntity<String> saveMember(@RequestBody Members member) {
         try {
-            membersService.deleteMember(id);
-            return new ResponseEntity<>("멤버 삭제에 성공했습니다.", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            membersService.saveMember(member);
+            return new ResponseEntity<>("멤버를 성공적으로 등록했습니다.", HttpStatus.CREATED);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -61,6 +60,17 @@ public class MembersController {
             return new ResponseEntity<>(member, HttpStatus.OK);
         } else {
             return new ResponseEntity<>("멤버 수정에 실패했습니다.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    // 멤버 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteMember(@PathVariable("id") Long id) {
+        try {
+            membersService.deleteMember(id);
+            return ResponseEntity.status(HttpStatus.OK).body("멤버 삭제가 완료되었습니다");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("멤버 삭제 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
 }

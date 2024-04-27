@@ -11,8 +11,13 @@ import java.util.List;
 @RequestMapping("/reviews")
 public class ReviewController {
 
-    @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    public ReviewController(ReviewService reviewService) {
+        this.reviewService = reviewService;
+    }
+
 
     // 리뷰 작성
     @PostMapping
@@ -53,8 +58,12 @@ public class ReviewController {
 
     // 리뷰 삭제
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Void> deleteReview(@PathVariable("reviewId") int reviewId) {
-        reviewService.deleteReview(reviewId);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<String> deleteReview(@PathVariable("reviewId") int reviewId) {
+        try {
+            reviewService.deleteReview(reviewId);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("리뷰 삭제가 완료되었습니다");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("리뷰 삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 }
