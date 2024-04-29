@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -55,11 +56,11 @@ public class MembersController {
     // 멤버 수정
     @PutMapping("/{id}")
     public ResponseEntity<?> updateMember(@PathVariable("id") Long id, @RequestBody Members updatedMember) {
-        Members member = membersService.updateMember(id, updatedMember);
-        if (member != null) {
+        try {
+            Members member = membersService.updateMember(id, updatedMember);
             return new ResponseEntity<>(member, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("멤버 수정에 실패했습니다.", HttpStatus.NOT_FOUND);
+        } catch (NoSuchElementException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -68,9 +69,9 @@ public class MembersController {
     public ResponseEntity<String> deleteMember(@PathVariable("id") Long id) {
         try {
             membersService.deleteMember(id);
-            return ResponseEntity.status(HttpStatus.OK).body("멤버 삭제가 완료되었습니다");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("멤버 삭제 중 오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.ok("멤버 삭제가 완료되었습니다");
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 id의 멤버가 존재하지 않습니다.");
         }
     }
 }

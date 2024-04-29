@@ -71,7 +71,7 @@ public class FoodController {
     public ResponseEntity<String> deleteFood(@PathVariable("id") Long id) {
         try {
             foodService.deleteFood(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("메뉴 삭제가 완료되었습니다");
+            return ResponseEntity.ok("메뉴 삭제가 완료되었습니다");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("메뉴 삭제 중 오류가 발생했습니다: " + e.getMessage());
         }

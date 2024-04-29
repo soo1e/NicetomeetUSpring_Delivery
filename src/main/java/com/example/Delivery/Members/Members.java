@@ -1,11 +1,19 @@
 package com.example.Delivery.Members;
 
+import com.example.Delivery.TimeConverter.LocalDateTimeAttributeConverter;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "members")
 public class Members {
 
+    public enum Role {
+        MEMBER, SHOP_OWNER, ADMIN
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,11 +29,13 @@ public class Members {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "registration_date", nullable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
-    private java.sql.Timestamp registrationDate = new java.sql.Timestamp(System.currentTimeMillis()); // 기본값 설정
+    @CreationTimestamp
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
+    @Column(name = "registration_date", nullable = false, updatable = false)
+    private LocalDateTime registrationDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false, columnDefinition = "ENUM('회원', '가게 사장', '관리자') DEFAULT '회원'")
+    @Column(name = "role", nullable = false, columnDefinition = "ENUM('MEMBER', 'SHOP_OWNER', 'ADMIN') DEFAULT 'MEMBER'")
     private Role role;
 
     @Column(name = "phone_number")
@@ -33,11 +43,6 @@ public class Members {
 
     @Column(name = "address")
     private String address;
-
-    public enum Role {
-        회원, 가게_사장, 관리자
-    }
-
 
     public Members() {
     }
@@ -81,14 +86,6 @@ public class Members {
         this.password = password;
     }
 
-    public java.sql.Timestamp getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(java.sql.Timestamp registrationDate) {
-        this.registrationDate = registrationDate;
-    }
-
     public Role getRole() {
         return role;
     }
@@ -111,6 +108,14 @@ public class Members {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
     }
 
     @Override

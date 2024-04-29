@@ -1,5 +1,9 @@
 package com.example.Delivery.Orders;
 
+import com.example.Delivery.Members.Members;
+import com.example.Delivery.Members.SpringDataJPAMembersRepository;
+import com.example.Delivery.Orders.DTO.OrderRequest;
+import com.example.Delivery.Orders.DTO.OrderResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.time.LocalDateTime;
 
 import java.util.Optional;
 
@@ -16,10 +19,12 @@ import java.util.Optional;
 public class OrdersController {
 
     private final OrdersService ordersService;
+    private SpringDataJPAMembersRepository membersRepository;
 
     @Autowired
-    public OrdersController(OrdersService ordersService) {
+    public OrdersController(OrdersService ordersService, SpringDataJPAMembersRepository membersRepository) {
         this.ordersService = ordersService;
+        this.membersRepository = membersRepository;
     }
 
     // 전체 주문 조회
@@ -57,44 +62,56 @@ public class OrdersController {
 
     // 주문 등록
     @PostMapping
-    public ResponseEntity<String> createOrder(@RequestBody Orders order) {
-        // orderTime을 Timestamp로 변환
-        LocalDateTime localDateTime = LocalDateTime.now();
-        Timestamp timestamp = Timestamp.valueOf(localDateTime);
+    public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest) {
+        // 주문 정보 설정
+        Orders order = new Orders();
+        order.setStoreId(orderRequest.getStoreId());
+        order.setRequest(orderRequest.getRequest());
+        order.setPaymentMethod(orderRequest.getPaymentMethod());
+        order.setOrderAmount(orderRequest.getOrderAmount());
+        order.setOrderStatus(orderRequest.getOrderStatus());
+        order.setOrderTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime()); // 현재 시간으로 설정
 
-        order.setOrderTime(timestamp);
+        // 회원 ID로 회원을 찾음
+        Optional<Members> optionalMember = membersRepository.findById(orderRequest.getMemberId());
+        if (optionalMember.isPresent()) {
+            Members member = optionalMember.get();
+            order.setMember(member); // 주문에 회원 정보 추가
 
-        try {
-            ordersService.createOrder(order);
-            return new ResponseEntity<>("주문을 성공적으로 등록했습니다.", HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            // 주문 정보 저장 후 저장된 주문 객체 반환
+            Orders savedOrder = ordersService.createOrder(orderRequest); // OrderRequest를 사용하여 주문을 생성
+
+            // 회원 정보와 함께 OrderResponse 객체를 생성하여 반환
+            OrderResponse response = new OrderResponse(savedOrder, member);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>("해당 memberId에 해당하는 회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         }
-//        Orders createdOrder = ordersService.createOrder(order);
-//        return new ResponseEntity<>(createdOrder, HttpStatus.CREATED);
     }
 
-    // 주문 정보 수정
+
+    // 주문 수정
     @PutMapping("/{orderId}")
-    public ResponseEntity<?> updateOrder(@PathVariable("orderId") int orderId, @RequestBody Orders updatedOrder) {
-        Orders orders = ordersService.updateOrder(orderId, updatedOrder);
-        if (orders != null) {
-            return new ResponseEntity<>(orders, HttpStatus.OK);
+    public ResponseEntity<?> updateOrder(@PathVariable("orderId") int orderId, @RequestBody OrderRequest updatedOrderRequest) {
+        // 주문 정보 가져오기
+        Optional<Orders> optionalOrder = ordersService.getOrderById(orderId);
+        if (optionalOrder.isPresent()) {
+            // OrderRequest를 사용하여 주문 정보 업데이트
+            Orders updatedOrder = ordersService.updateOrder(orderId, updatedOrderRequest);
+            return new ResponseEntity<>(updatedOrder, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("주문 수정에 실패했습니다.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("수정할 주문을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
         }
     }
 
     // 주문 삭제
     @DeleteMapping("/{orderId}")
     public ResponseEntity<String> deleteOrder(@PathVariable("orderId") int orderId) {
-        ordersService.deleteOrder(orderId);
-        return new ResponseEntity<>("주문 삭제를 성공했습니다.", HttpStatus.NO_CONTENT);
-        //        try {
-//            ordersService.deleteOrder(orderId);
-//            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("주문 삭제가 완료되었습니다");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("주문 삭제 중 오류가 발생했습니다: " + e.getMessage());
-//        }
+        try {
+            ordersService.deleteOrder(orderId);
+            return ResponseEntity.ok("주문 삭제가 완료되었습니다");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("주문 삭제 중 오류가 발생했습니다: " + e.getMessage());
+        }
     }
 }

@@ -15,25 +15,27 @@ public class ReviewService {
         this.reviewRepository = reviewRepository;
     }
 
-    // 리뷰 작성 메소드
-    public Review writeReview(int memberId, int storeId, double rating, String content) {
-        return reviewRepository.writeReview(memberId, storeId, rating, content);
-    }
-
-
-
+    // 전체 리뷰 조회
     public List<Review> getAllReviews() {
         return reviewRepository.findAll();
     }
 
+    // memberId로 리뷰 조회
     public List<Review> getReviewsByMemberId(int memberId) {
         return reviewRepository.findByMemberId(memberId);
     }
 
+    // storeId로 리뷰 조회
     public List<Review> getReviewsByStoreId(int storeId) {
         return reviewRepository.findByStoreId(storeId);
     }
 
+    // 리뷰 작성
+    public Review writeReview(int memberId, int storeId, double rating, String content) {
+        return reviewRepository.writeReview(memberId, storeId, rating, content);
+    }
+
+    // 리뷰 수정
     public Review updateReview(int reviewId, int memberId, int storeId, double rating, String content) {
         if (reviewRepository.existsById(reviewId)) {
             Review review = reviewRepository.findById(reviewId).orElseThrow(() -> new IllegalArgumentException("해당 id의 리뷰를 찾을 수 없습니다."));
@@ -47,7 +49,7 @@ public class ReviewService {
         }
     }
 
-
+    // 리뷰 삭제
     public void deleteReview(int reviewId) {
         if (reviewRepository.existsById(reviewId)) {
             reviewRepository.deleteById(reviewId);
