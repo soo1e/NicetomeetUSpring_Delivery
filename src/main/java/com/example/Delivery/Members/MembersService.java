@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -18,28 +19,31 @@ public class MembersService {
     }
 
     // 특정 멤버 조회
-    public Members getMemberById(Long id) {
-        Optional<Members> optionalMember = membersRepository.findById(id);
-        return optionalMember.orElse(null);
+    public Optional<Members> getMemberById(Long memberId) {
+        return membersRepository.findById(memberId);
     }
 
-    // 멤버 등록
-    public Members addMember(Members member) {
-        return membersRepository.save(member);
-    }
-
-    // 멤버 삭제
-    public void deleteMember(Long id) {
-        membersRepository.deleteById(id);
+    // 멤버 저장
+    public void saveMember(Members member) {
+        membersRepository.save(member);
     }
 
     // 멤버 수정
-    public Members updateMember(Long id, Members updatedMember) {
-        if (membersRepository.existsById(id)) {
-            updatedMember.setMemberId(id);
+    public Members updateMember(Long memberId, Members updatedMember) {
+        if (membersRepository.existsById(memberId)) {
+            updatedMember.setMemberId(memberId);
             return membersRepository.save(updatedMember);
         } else {
-            return null;
+            throw new NoSuchElementException("해당 id의 멤버가 존재하지 않습니다.");
+        }
+    }
+
+    // 멤버 삭제
+    public void deleteMember(Long memberId) {
+        if (membersRepository.existsById(memberId)) {
+            membersRepository.deleteById(memberId);
+        } else {
+            throw new NoSuchElementException("해당 id의 멤버가 존재하지 않습니다.");
         }
     }
 }

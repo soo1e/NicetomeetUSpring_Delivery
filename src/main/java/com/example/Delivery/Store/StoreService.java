@@ -6,58 +6,74 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
 public class StoreService {
 
-    private final SpringDataJPAStoreRepository springDataJPAStoreRepository;
-    private final SpringDataJPAFoodRepository springDataJPAFoodRepository;
+    private final SpringDataJPAStoreRepository storeRepository;
+    private final SpringDataJPAFoodRepository foodRepository;
 
     @Autowired
-    public StoreService(SpringDataJPAStoreRepository springDataJPAStoreRepository, SpringDataJPAFoodRepository springDataJPAFoodRepository) {
-        this.springDataJPAStoreRepository = springDataJPAStoreRepository;
-        this.springDataJPAFoodRepository = springDataJPAFoodRepository;
+    public StoreService(SpringDataJPAStoreRepository storeRepository, SpringDataJPAFoodRepository foodRepository) {
+        this.storeRepository = storeRepository;
+        this.foodRepository = foodRepository;
     }
 
-    public Store findStore(Long id) {
-        return springDataJPAStoreRepository.findById(id).orElse(null);
-    }
-
-    public void saveStore(Store store) {
-        springDataJPAStoreRepository.save(store);
-        List<Food> menu = store.getMenu();
-        if (menu != null) {
-            for (Food food : menu) {
-                food.setStore(store);
-                springDataJPAFoodRepository.save(food);
-            }
-        }
-    }
-
-    public List<Store> findAllStores() {
-        return springDataJPAStoreRepository.findAll();
-    }
-
-    public void deleteStore(Long id) {
-        springDataJPAStoreRepository.deleteById(id);
-    }
-
-    public List<Store> findAllStoresWithMenu() {
-        List<Store> stores = springDataJPAStoreRepository.findAll();
+    // 전체 가게 조회
+    public List<Store> findAllStoresByMenu() {
+        List<Store> stores = storeRepository.findAll();
         for (Store store : stores) {
-            List<Food> menu = springDataJPAFoodRepository.findByStore_StoreId(store.getStoreId());
+            List<Food> menu = foodRepository.findByStore_StoreId(store.getStoreId());
             store.setMenu(menu);
         }
         return stores;
     }
 
-    public Store findStoreWithMenu(Long id) {
-        Store store = springDataJPAStoreRepository.findById(id).orElse(null);
+    // 특정 가게 조회
+    public Optional<Store> findStore(Long storeId) {
+        return storeRepository.findById(storeId);
+    }
+
+    // id로 특정 가게 조회
+    public Store findStoreByMenu(Long storeId) {
+        Store store = storeRepository.findById(storeId).orElse(null);
         if (store != null) {
-            List<Food> menu = springDataJPAFoodRepository.findByStore_StoreId(id);
+            List<Food> menu = foodRepository.findByStore_StoreId(storeId);
             store.setMenu(menu);
         }
         return store;
+    }
+
+    // 가게 저장
+    public void saveStore(Store store) {
+        storeRepository.save(store);
+        List<Food> menu = store.getMenu();
+        if (menu != null) {
+            for (Food food : menu) {
+                food.setStore(store);
+                foodRepository.save(food);
+            }
+        }
+    }
+
+    // 가게 수정
+    public Store updateStore(Long storeId, Store updatedStore) {
+        if (storeRepository.existsById(storeId)) {
+            updatedStore.setStoreId(storeId);
+            return storeRepository.save(updatedStore);
+        } else {
+            throw new NoSuchElementException("해당 id의 가게가 존재하지 않습니다.");
+        }
+    }
+
+    // 가게 삭제
+    public void deleteStore(Long storeId) {
+        if (storeRepository.existsById(storeId)) {
+            storeRepository.deleteById(storeId);
+        } else {
+            throw new NoSuchElementException("해당 id의 가게가 존재하지 않습니다.");
+        }
     }
 }

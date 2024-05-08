@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 @Entity
 public class Food {
 
-
     public enum Status {
         SELLING,
         SOLD_OUT
@@ -23,7 +22,7 @@ public class Food {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "store_id", nullable = false)
+    @JoinColumn(name = "store_id")
     private Store store;
 
 
@@ -74,5 +73,4 @@ public class Food {
     public void setStore(Store store) {
         this.store = store;
     }
-
 }

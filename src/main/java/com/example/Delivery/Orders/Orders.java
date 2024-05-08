@@ -1,14 +1,22 @@
 package com.example.Delivery.Orders;
 
 import com.example.Delivery.Members.Members;
+import com.example.Delivery.TimeConverter.LocalDateTimeAttributeConverter;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "orders")
 public class Orders {
+
+    public enum OrderStatus {
+        ORDER_CONFIRMED,
+        COOKING,
+        ON_DELIVERY,
+        DELIVERED
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +30,6 @@ public class Orders {
     @Column(name = "store_id")
     private int storeId;
 
-    @Column(name = "request")
     private String request;
 
     @Column(name = "payment_method")
@@ -31,19 +38,14 @@ public class Orders {
     @Column(name = "order_amount")
     private long orderAmount;
 
+    @CreationTimestamp
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
     @Column(name = "order_time")
-    private Timestamp orderTime;
+    private LocalDateTime orderTime;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status")
     private OrderStatus orderStatus;
-
-    public enum OrderStatus {
-        ORDER_CONFIRMED,
-        COOKING,
-        ON_DELIVERY,
-        DELIVERED
-    }
 
     public Orders() {
     }
@@ -55,7 +57,7 @@ public class Orders {
         this.request = request;
         this.paymentMethod = paymentMethod;
         this.orderAmount = orderAmount;
-        this.orderTime = orderTime;
+        this.orderTime = orderTime.toLocalDateTime();
         this.orderStatus = orderStatus;
     }
 
@@ -67,8 +69,8 @@ public class Orders {
         this.orderId = orderId;
     }
 
-    public Members getMember() {
-        return member;
+    public Long getMemberId() {
+        return member != null ? member.getMemberId() : null;
     }
 
     public void setMember(Members member) {
@@ -99,11 +101,11 @@ public class Orders {
         this.orderAmount = orderAmount;
     }
 
-    public Timestamp getOrderTime() {
+    public LocalDateTime getOrderTime() {
         return orderTime;
     }
 
-    public void setOrderTime(Timestamp orderTime) {
+    public void setOrderTime(LocalDateTime orderTime) {
         this.orderTime = orderTime;
     }
 

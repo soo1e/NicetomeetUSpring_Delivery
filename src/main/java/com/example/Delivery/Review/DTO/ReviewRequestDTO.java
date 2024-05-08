@@ -1,41 +1,23 @@
-package com.example.Delivery.Review;
+package com.example.Delivery.Review.DTO;
 
-import jakarta.persistence.*;
-
-
-@Entity
-public class Review {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int reviewId;
-
+// 리뷰에 따라 store, member 정보를 가져오는 DTO입니다.
+public class ReviewRequestDTO {
     private int memberId;
     private int storeId;
-
     private double rating;
     private String content;
 
-    public Review() {
-
+    public ReviewRequestDTO() {
     }
 
-    public Review(int reviewId, int memberId, int storeId, double rating, String content) {
-        this.reviewId = reviewId;
+    public ReviewRequestDTO(int memberId, int storeId, double rating, String content) {
         this.memberId = memberId;
         this.storeId = storeId;
         this.rating = rating;
         this.content = content;
     }
 
-    public int getReviewId() {
-        return reviewId;
-    }
-
-    public void setReviewId(int reviewId) {
-        this.reviewId = reviewId;
-    }
-
-    public int getMemberId() {
+    public long getMemberId() {
         return memberId;
     }
 
@@ -43,7 +25,7 @@ public class Review {
         this.memberId = memberId;
     }
 
-    public int getStoreId() {
+    public long getStoreId() {
         return storeId;
     }
 

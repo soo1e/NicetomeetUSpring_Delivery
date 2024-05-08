@@ -21,7 +21,6 @@ public class Store {
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL)
     private List<Food> menu;
 
-    // Constructors, getters, and setters
     public Store() {}
 
     public Store(String name, Integer categoryId, String phoneNumber, String operatingHours, Integer minOrderAmount, Double rating) {
@@ -33,7 +32,6 @@ public class Store {
         this.rating = rating;
     }
 
-    // Getters and setters
     public Long getStoreId() {
         return storeId;
     }
