@@ -1,16 +1,16 @@
 package com.example.Delivery.Review.DTO;
 
 // 리뷰에 따라 store, member 정보를 가져오는 DTO입니다.
-public class ReviewRequest {
+public class ReviewRequestDTO {
     private int memberId;
     private int storeId;
     private double rating;
     private String content;
 
-    public ReviewRequest() {
+    public ReviewRequestDTO() {
     }
 
-    public ReviewRequest(int memberId, int storeId, double rating, String content) {
+    public ReviewRequestDTO(int memberId, int storeId, double rating, String content) {
         this.memberId = memberId;
         this.storeId = storeId;
         this.rating = rating;

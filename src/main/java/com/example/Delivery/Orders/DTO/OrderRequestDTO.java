@@ -5,7 +5,7 @@ import com.example.Delivery.Orders.Orders;
 import java.sql.Timestamp;
 
 // 주문 요청에 따라 정보를 처리하는 DTO입니다.
-public class OrderRequest {
+public class OrderRequestDTO {
     private int storeId;
     private String request;
     private String paymentMethod;
@@ -14,9 +14,9 @@ public class OrderRequest {
     private Long memberId;
     private Timestamp orderTime;
 
-    public OrderRequest() {}
+    public OrderRequestDTO() {}
 
-    public OrderRequest(int storeId, String request, String paymentMethod, long orderAmount, Orders.OrderStatus orderStatus, Long memberId, Timestamp orderTime) {
+    public OrderRequestDTO(int storeId, String request, String paymentMethod, long orderAmount, Orders.OrderStatus orderStatus, Long memberId, Timestamp orderTime) {
         this.storeId = storeId;
         this.request = request;
         this.paymentMethod = paymentMethod;

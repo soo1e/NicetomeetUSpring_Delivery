@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "orders")
 public class Orders {
 
     public enum OrderStatus {
@@ -31,7 +30,6 @@ public class Orders {
     @Column(name = "store_id")
     private int storeId;
 
-    @Column(name = "request")
     private String request;
 
     @Column(name = "payment_method")

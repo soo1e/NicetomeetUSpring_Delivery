@@ -1,9 +1,12 @@
 package com.example.Delivery.Members;
 
+import com.example.Delivery.Members.Error.ErrorMessage;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -11,35 +14,30 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/members")
+@AllArgsConstructor
+
 public class MembersController {
 
     private MembersService membersService;
 
-    @Autowired
-    public void MemberController(MembersService membersService) {
-        this.membersService = membersService;
-    }
 
     // 모든 멤버 조회
     @GetMapping
     public ResponseEntity<?> getAllMembers() {
-        List<Members> membersList = membersService.getAllMembers();
-        if (!membersList.isEmpty()) {
-            return new ResponseEntity<>(membersList, HttpStatus.OK);
+        List<Members> members = membersService.getAllMembers();
+        if (members.isEmpty()) {
+            return new ResponseEntity<>(ErrorMessage.MEMBER_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>("조회할 멤버가 없습니다.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(members, HttpStatus.OK);
         }
     }
 
     // 특정 멤버 조회
     @GetMapping("/{id}")
     public ResponseEntity<?> getMemberById(@PathVariable("id") Long id) {
-        Optional<Members> member = membersService.getMemberById(id);
-        if (member.isPresent()) {
-            return new ResponseEntity<>(member, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("조회할 멤버가 없습니다.", HttpStatus.NOT_FOUND);
-        }
+        Members member = membersService.getMemberById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorMessage.MEMBER_NOT_FOUND.getMessage()));
+        return new ResponseEntity<>(member, HttpStatus.OK);
     }
 
     // 멤버 등록
@@ -47,9 +45,9 @@ public class MembersController {
     public ResponseEntity<String> saveMember(@RequestBody Members member) {
         try {
             membersService.saveMember(member);
-            return new ResponseEntity<>("멤버를 성공적으로 등록했습니다.", HttpStatus.CREATED);
+            return new ResponseEntity<>(ErrorMessage.MEMBER_REGISTRATION_SUCCESS.getMessage(), HttpStatus.CREATED);
         } catch (RuntimeException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(ErrorMessage.MEMBER_REGISTRATION_FAILED.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -60,7 +58,7 @@ public class MembersController {
             Members member = membersService.updateMember(id, updatedMember);
             return new ResponseEntity<>(member, HttpStatus.OK);
         } catch (NoSuchElementException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ErrorMessage.MEMBER_UPDATE_FAILED.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -69,9 +67,9 @@ public class MembersController {
     public ResponseEntity<String> deleteMember(@PathVariable("id") Long id) {
         try {
             membersService.deleteMember(id);
-            return ResponseEntity.ok("멤버 삭제가 완료되었습니다");
+            return ResponseEntity.ok(ErrorMessage.MEMBER_DELETE_SUCCESS.getMessage());
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 id의 멤버가 존재하지 않습니다.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorMessage.MEMBER_DELETE_FAILED.getMessage());
         }
     }
 }

@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@Table(name = "members")
 public class Members {
 
     public enum Role {
@@ -20,13 +19,13 @@ public class Members {
     @Column(name = "member_id")
     private Long memberId;
 
-    @Column(name = "username", nullable = false)
+    @Column(nullable = false)
     private String username;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(nullable = false)
     private String password;
 
     @CreationTimestamp
@@ -41,7 +40,6 @@ public class Members {
     @Column(name = "phone_number")
     private String phoneNumber;
 
-    @Column(name = "address")
     private String address;
 
     public Members() {

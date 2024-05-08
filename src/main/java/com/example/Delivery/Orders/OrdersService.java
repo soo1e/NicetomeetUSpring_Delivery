@@ -2,7 +2,7 @@ package com.example.Delivery.Orders;
 
 import com.example.Delivery.Members.Members;
 import com.example.Delivery.Members.SpringDataJPAMembersRepository;
-import com.example.Delivery.Orders.DTO.OrderRequest;
+import com.example.Delivery.Orders.DTO.OrderRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,18 +38,18 @@ public class OrdersService {
     }
 
     // 주문 생성
-    public Orders createOrder(OrderRequest orderRequest) {
+    public Orders createOrder(OrderRequestDTO orderRequestDTO) {
         // 주문 정보 설정
         Orders order = new Orders();
-        order.setStoreId(orderRequest.getStoreId());
-        order.setRequest(orderRequest.getRequest());
-        order.setPaymentMethod(orderRequest.getPaymentMethod());
-        order.setOrderAmount(orderRequest.getOrderAmount());
-        order.setOrderStatus(orderRequest.getOrderStatus());
+        order.setStoreId(orderRequestDTO.getStoreId());
+        order.setRequest(orderRequestDTO.getRequest());
+        order.setPaymentMethod(orderRequestDTO.getPaymentMethod());
+        order.setOrderAmount(orderRequestDTO.getOrderAmount());
+        order.setOrderStatus(orderRequestDTO.getOrderStatus());
         order.setOrderTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
 
         // 회원 ID로 회원을 찾음
-        Optional<Members> optionalMember = membersRepository.findById((long) orderRequest.getMemberId());
+        Optional<Members> optionalMember = membersRepository.findById((long) orderRequestDTO.getMemberId());
         if (optionalMember.isPresent()) {
             Members member = optionalMember.get();
             order.setMember(member); // 주문에 회원 정보 추가
@@ -62,17 +62,17 @@ public class OrdersService {
     }
 
     // 주문 정보 수정
-    public Orders updateOrder(int orderId, OrderRequest updatedOrderRequest) {
+    public Orders updateOrder(int orderId, OrderRequestDTO updatedOrderRequestDTO) {
         Optional<Orders> optionalOrder = ordersRepository.findById(orderId);
         if (optionalOrder.isPresent()) {
             Orders existingOrder = optionalOrder.get();
 
             // 업데이트할 정보를 OrderRequest로부터 가져와서 설정
-            existingOrder.setStoreId(updatedOrderRequest.getStoreId());
-            existingOrder.setRequest(updatedOrderRequest.getRequest());
-            existingOrder.setPaymentMethod(updatedOrderRequest.getPaymentMethod());
-            existingOrder.setOrderAmount(updatedOrderRequest.getOrderAmount());
-            existingOrder.setOrderStatus(updatedOrderRequest.getOrderStatus());
+            existingOrder.setStoreId(updatedOrderRequestDTO.getStoreId());
+            existingOrder.setRequest(updatedOrderRequestDTO.getRequest());
+            existingOrder.setPaymentMethod(updatedOrderRequestDTO.getPaymentMethod());
+            existingOrder.setOrderAmount(updatedOrderRequestDTO.getOrderAmount());
+            existingOrder.setOrderStatus(updatedOrderRequestDTO.getOrderStatus());
             existingOrder.setOrderTime(new Timestamp(System.currentTimeMillis()).toLocalDateTime()); // 현재 시간으로 설정
 
             // 주문 정보 저장 후 저장된 주문 객체 반환

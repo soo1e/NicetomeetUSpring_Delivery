@@ -1,33 +1,30 @@
 package com.example.Delivery.Store;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.Delivery.Store.Error.ErrorMessage;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/stores")
+@AllArgsConstructor
 public class StoreController {
 
     private StoreService storeService;
 
-    @Autowired
-    public StoreController(StoreService storeService) {
-        this.storeService = storeService;
-    }
 
     // 전체 가게 조회
     @GetMapping
     public ResponseEntity<?> getAllStoresByMenu() {
-        List<Store> storeList = storeService.findAllStoresByMenu();
-        if (!storeList.isEmpty()) {
-            return new ResponseEntity<>(storeList, HttpStatus.OK);
+        List<Store> store = storeService.findAllStoresByMenu();
+        if (store.isEmpty()) {
+            return new ResponseEntity<>(ErrorMessage.STORE_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>("조회할 가게가 없습니다.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(store, HttpStatus.OK);
         }
     }
 
@@ -38,7 +35,7 @@ public class StoreController {
         if (store != null) {
             return new ResponseEntity<>(store, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>("조회할 가게가 없습니다." ,HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ErrorMessage.STORE_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -59,10 +56,10 @@ public class StoreController {
                 storeService.saveStore(storeDetails);
                 return new ResponseEntity<>(storeDetails, HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("해당 ID의 가게를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(ErrorMessage.STORE_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
             }
         } catch (NoSuchElementException e) {
-            return new ResponseEntity<>("해당 ID의 가게를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(ErrorMessage.STORE_NOT_FOUND.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
@@ -72,11 +69,10 @@ public class StoreController {
     public ResponseEntity<String> deleteStore(@PathVariable("id") Long storeId) {
         try {
             storeService.deleteStore(storeId);
-            return ResponseEntity.ok("가게 삭제가 완료되었습니다");
+            return ResponseEntity.ok(ErrorMessage.STORE_DELETE_SUCCESS.getMessage());
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 ID의 가게를 찾을 수 없습니다");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorMessage.STORE_NOT_FOUND.getMessage());
         }
     }
 
 }
-
