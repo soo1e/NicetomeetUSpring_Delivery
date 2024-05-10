@@ -2,11 +2,18 @@ package com.example.Delivery.Members;
 
 import com.example.Delivery.TimeConverter.LocalDateTimeAttributeConverter;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
 
+@Getter
+@Setter
 @Entity
 public class Members {
 
@@ -19,9 +26,14 @@ public class Members {
     @Column(name = "member_id")
     private Long memberId;
 
+
+    @NotBlank(message = "사용자 이름은 필수 입력입니다.")
+    @Size(min = 3, max = 50, message = "사용자 이름은 3자 이상 50자 이하여야 합니다.")
     @Column(nullable = false)
     private String username;
 
+    @NotBlank(message = "이메일은 필수 입력입니다.")
+    @Email(message = "유효하지 않은 이메일 형식입니다.")
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -52,69 +64,6 @@ public class Members {
         this.role = role;
     }
 
-    public Long getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(Long memberId) {
-        this.memberId = memberId;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public LocalDateTime getRegistrationDate() {
-        return registrationDate;
-    }
-
-    public void setRegistrationDate(LocalDateTime registrationDate) {
-        this.registrationDate = registrationDate;
-    }
 
     @Override
     public String toString() {

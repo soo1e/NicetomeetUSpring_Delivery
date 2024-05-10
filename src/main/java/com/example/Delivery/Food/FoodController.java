@@ -1,12 +1,13 @@
 package com.example.Delivery.Food;
 
+import com.example.Delivery.Food.DTO.FoodDTO;
 import com.example.Delivery.Food.Error.ErrorMessage;
 import com.example.Delivery.Food.Error.NotFoundException;
-import com.example.Delivery.Store.StoreService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,11 +16,10 @@ import java.util.NoSuchElementException;
 @RestController
 @RequestMapping("/foods")
 @AllArgsConstructor
-
+@Validated
 public class FoodController {
 
     private final FoodService foodService;
-    private final StoreService storeService;
 
     // 전체 메뉴 조회
     @GetMapping
@@ -47,9 +47,9 @@ public class FoodController {
 
     // 메뉴 등록
     @PostMapping
-    public ResponseEntity<String> saveFood(@RequestBody Food food, @RequestParam("storeId") Long storeId) {
+    public ResponseEntity<String> saveFood(@Valid @RequestBody FoodDTO foodDTO) {
         try {
-            foodService.saveFood(food, storeId);
+            foodService.saveFood(foodDTO);
             return new ResponseEntity<>(ErrorMessage.MENU_SAVE_SUCCESS.getMessage(), HttpStatus.CREATED);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(ErrorMessage.FAILED_TO_SAVE_MENU.getMessage(), HttpStatus.BAD_REQUEST);

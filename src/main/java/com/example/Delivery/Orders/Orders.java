@@ -3,12 +3,16 @@ package com.example.Delivery.Orders;
 import com.example.Delivery.Members.Members;
 import com.example.Delivery.TimeConverter.LocalDateTimeAttributeConverter;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Entity
+@Getter
+@Setter
 public class Orders {
 
     public enum OrderStatus {
@@ -59,69 +63,5 @@ public class Orders {
         this.orderAmount = orderAmount;
         this.orderTime = orderTime.toLocalDateTime();
         this.orderStatus = orderStatus;
-    }
-
-    public int getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(int orderId) {
-        this.orderId = orderId;
-    }
-
-    public Long getMemberId() {
-        return member != null ? member.getMemberId() : null;
-    }
-
-    public void setMember(Members member) {
-        this.member = member;
-    }
-
-    public String getRequest() {
-        return request;
-    }
-
-    public void setRequest(String request) {
-        this.request = request;
-    }
-
-    public String getPaymentMethod() {
-        return paymentMethod;
-    }
-
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
-    }
-
-    public long getOrderAmount() {
-        return orderAmount;
-    }
-
-    public void setOrderAmount(long orderAmount) {
-        this.orderAmount = orderAmount;
-    }
-
-    public LocalDateTime getOrderTime() {
-        return orderTime;
-    }
-
-    public void setOrderTime(LocalDateTime orderTime) {
-        this.orderTime = orderTime;
-    }
-
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
-    }
-
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
-    }
-
-    public int getStoreId() {
-        return storeId;
-    }
-
-    public void setStoreId(int storeId) {
-        this.storeId = storeId;
     }
 }

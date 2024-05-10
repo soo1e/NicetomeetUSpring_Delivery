@@ -11,7 +11,7 @@ public interface SpringDataJPAReviewRepository extends JpaRepository<Review, Int
     List<Review> findByStoreId(long storeId);
 
     // 리뷰 작성 메소드
-    default Review writeReview(int memberId, int storeId, double rating, String content) {
+    default Review writeReview(long memberId,long storeId, double rating, String content) {
         Review review = new Review();
         review.setMemberId(memberId);
         review.setStoreId(storeId);

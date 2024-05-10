@@ -1,6 +1,9 @@
 package com.example.Delivery.Review.DTO;
 
+import lombok.Setter;
+
 // 리뷰에 따라 store, member 정보를 가져오는 DTO입니다.
+@Setter
 public class ReviewRequestDTO {
     private int memberId;
     private int storeId;
@@ -21,31 +24,16 @@ public class ReviewRequestDTO {
         return memberId;
     }
 
-    public void setMemberId(int memberId) {
-        this.memberId = memberId;
-    }
-
     public long getStoreId() {
         return storeId;
-    }
-
-    public void setStoreId(int storeId) {
-        this.storeId = storeId;
     }
 
     public double getRating() {
         return rating;
     }
 
-    public void setRating(double rating) {
-        this.rating = rating;
-    }
-
     public String getContent() {
         return content;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
 }

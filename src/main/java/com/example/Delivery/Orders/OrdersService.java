@@ -3,7 +3,7 @@ package com.example.Delivery.Orders;
 import com.example.Delivery.Members.Members;
 import com.example.Delivery.Members.SpringDataJPAMembersRepository;
 import com.example.Delivery.Orders.DTO.OrderRequestDTO;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -11,16 +11,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class OrdersService {
 
     private SpringDataJPAOrdersRepository ordersRepository;
     private SpringDataJPAMembersRepository membersRepository;
-
-    @Autowired
-    public OrdersService(SpringDataJPAOrdersRepository ordersRepository, SpringDataJPAMembersRepository membersRepository) {
-        this.ordersRepository = ordersRepository;
-        this.membersRepository = membersRepository;
-    }
 
     // 전체 주문 조회
     public List<Orders> getAllOrders() {

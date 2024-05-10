@@ -1,8 +1,12 @@
 package com.example.Delivery.Members;
 
+import com.example.Delivery.Members.DTO.MemberRequestDTO;
+import com.example.Delivery.Members.Error.DuplicateEmailException;
+import com.example.Delivery.Members.Error.DuplicatePhoneNumberException;
+import com.example.Delivery.Members.Error.DuplicateUsernameException;
 import com.example.Delivery.Members.Error.ErrorMessage;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/members")
@@ -42,14 +45,17 @@ public class MembersController {
 
     // 멤버 등록
     @PostMapping
-    public ResponseEntity<String> saveMember(@RequestBody Members member) {
+    public ResponseEntity<String> saveMember(@Valid @RequestBody MemberRequestDTO memberRequestDTO) {
         try {
-            membersService.saveMember(member);
+            membersService.saveMember(memberRequestDTO);
             return new ResponseEntity<>(ErrorMessage.MEMBER_REGISTRATION_SUCCESS.getMessage(), HttpStatus.CREATED);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(ErrorMessage.MEMBER_REGISTRATION_FAILED.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (DuplicateUsernameException | DuplicateEmailException | DuplicatePhoneNumberException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
+
 
     // 멤버 수정
     @PutMapping("/{id}")
@@ -59,6 +65,10 @@ public class MembersController {
             return new ResponseEntity<>(member, HttpStatus.OK);
         } catch (NoSuchElementException e) {
             return new ResponseEntity<>(ErrorMessage.MEMBER_UPDATE_FAILED.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (DuplicateUsernameException | DuplicateEmailException | DuplicatePhoneNumberException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
