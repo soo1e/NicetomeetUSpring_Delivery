@@ -1,24 +1,21 @@
 package com.example.Delivery.Food;
 
+import com.example.Delivery.Food.DTO.FoodDTO;
 import com.example.Delivery.Store.SpringDataJPAStoreRepository;
 import com.example.Delivery.Store.Store;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @Service
 public class FoodService {
 
     private final SpringDataJPAFoodRepository foodRepository;
-    private final SpringDataJPAStoreRepository springDataJPAStoreRepository;
-
-    @Autowired
-    public FoodService(SpringDataJPAFoodRepository foodRepository, SpringDataJPAStoreRepository springDataJPAStoreRepository) {
-        this.foodRepository = foodRepository;
-        this.springDataJPAStoreRepository = springDataJPAStoreRepository;
-    }
+    private final SpringDataJPAStoreRepository storeRepository;
 
     // 전체 메뉴 조회
     public List<Food> getAllFood() {
@@ -31,10 +28,16 @@ public class FoodService {
     }
 
     // 메뉴 저장
-    public void saveFood(Food food, Long storeId) {
-        Store store = springDataJPAStoreRepository.findById(storeId)
+    public void saveFood(@Valid FoodDTO foodDTO) {
+        Store store = storeRepository.findById(foodDTO.getStoreId())
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
+
+        Food food = new Food();
+        food.setName(foodDTO.getName());
+        food.setPrice(foodDTO.getPrice());
+        food.setDescription(foodDTO.getDescription());
         food.setStore(store);
+
         foodRepository.save(food);
     }
 

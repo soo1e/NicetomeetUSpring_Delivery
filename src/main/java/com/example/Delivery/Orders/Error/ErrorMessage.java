@@ -1,5 +1,8 @@
 package com.example.Delivery.Orders.Error;
 
+import lombok.Getter;
+
+@Getter
 public enum ErrorMessage {
     ORDER_NOT_FOUND("조회할 주문이 없습니다."),
     MEMBER_NOT_FOUND("해당 memberId에 해당하는 회원을 찾을 수 없습니다."),
@@ -10,9 +13,5 @@ public enum ErrorMessage {
 
     ErrorMessage(String message) {
         this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
     }
 }

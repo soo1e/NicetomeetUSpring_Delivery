@@ -1,25 +1,41 @@
 package com.example.Delivery.Review;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.validation.constraints.*;
+import lombok.Getter;
+import lombok.Setter;
 
 
+@Getter
+@Setter
 @Entity
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int reviewId;
+    private long reviewId;
 
-    private int memberId;
-    private int storeId;
+    @NotNull(message = "멤버 ID는 필수 입력 항목입니다.")
+    private long memberId;
 
+    @NotNull(message = "가게 ID는 필수 입력 항목입니다.")
+    private long storeId;
+
+
+    @Min(value = 0, message = "평점은 0보다 작을 수 없습니다.")
+    @Max(value = 5, message = "평점은 5보다 클 수 없습니다.")
     private double rating;
+
+    @NotBlank(message = "리뷰 내용은 필수 입력 항목입니다.")
     private String content;
 
     public Review() {
 
     }
 
-    public Review(int reviewId, int memberId, int storeId, double rating, String content) {
+    public Review(long reviewId, long memberId, long storeId, double rating, String content) {
         this.reviewId = reviewId;
         this.memberId = memberId;
         this.storeId = storeId;
@@ -27,43 +43,4 @@ public class Review {
         this.content = content;
     }
 
-    public int getReviewId() {
-        return reviewId;
-    }
-
-    public void setReviewId(int reviewId) {
-        this.reviewId = reviewId;
-    }
-
-    public int getMemberId() {
-        return memberId;
-    }
-
-    public void setMemberId(int memberId) {
-        this.memberId = memberId;
-    }
-
-    public int getStoreId() {
-        return storeId;
-    }
-
-    public void setStoreId(int storeId) {
-        this.storeId = storeId;
-    }
-
-    public double getRating() {
-        return rating;
-    }
-
-    public void setRating(double rating) {
-        this.rating = rating;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 }

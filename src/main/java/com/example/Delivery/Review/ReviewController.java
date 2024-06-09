@@ -59,23 +59,29 @@ public class ReviewController {
     @PostMapping
     public ResponseEntity<?> addReview(@RequestBody ReviewRequestDTO request) {
         try {
+            // 유효성 검사를 통해 예외 발생 여부 확인
+            if (request.getRating() < 0 || request.getRating() > 5) {
+                throw new IllegalArgumentException(ErrorMessage.RATE_RANGE_ERROR.getMessage());
+            }
+
             // 멤버 ID가 존재하는지 확인
-            if (!membersRepository.existsById(request.getMemberId())) {
+            if (!membersRepository.existsById((long) request.getMemberId())) {
                 throw new IllegalArgumentException(ErrorMessage.MEMBER_NOT_FOUND.getMessage());
             }
 
             // 가게 ID가 존재하는지 확인
-            if (!storeRepository.existsById(request.getStoreId())) {
+            if (!storeRepository.existsById((long) request.getStoreId())) {
                 throw new IllegalArgumentException(ErrorMessage.STORE_NOT_FOUND.getMessage());
             }
 
             // DTO로부터 데이터를 추출하여 리뷰 생성
-            Review createdReview = reviewService.writeReview((int) request.getMemberId(), (int) request.getStoreId(), request.getRating(), request.getContent());
+            Review createdReview = reviewService.writeReview(request.getMemberId(), request.getStoreId(), request.getRating(), request.getContent());
             return new ResponseEntity<>(createdReview, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorMessage.REVIEW_WRITE_ERROR.getMessage() + e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage()); // 예외 메시지 반환
         }
     }
+
 
 
     // 리뷰 수정
