@@ -15,7 +15,7 @@ import java.util.Optional;
 public class FoodService {
 
     private final SpringDataJPAFoodRepository foodRepository;
-    private final SpringDataJPAStoreRepository springDataJPAStoreRepository;
+    private final SpringDataJPAStoreRepository storeRepository;
 
     // 전체 메뉴 조회
     public List<Food> getAllFood() {
@@ -29,7 +29,7 @@ public class FoodService {
 
     // 메뉴 저장
     public void saveFood(@Valid FoodDTO foodDTO) {
-        Store store = springDataJPAStoreRepository.findById(foodDTO.getStoreId())
+        Store store = storeRepository.findById(foodDTO.getStoreId())
                 .orElseThrow(() -> new RuntimeException("가게를 찾을 수 없습니다."));
 
         Food food = new Food();

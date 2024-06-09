@@ -28,32 +28,37 @@ public class MembersService {
         return membersRepository.findById(memberId);
     }
 
-    // 멤버 저장
-    public void saveMember(MemberRequestDTO memberRequestDTO) throws DuplicateEmailException {
-        // 사용자명 중복 체크
-        if (membersRepository.existsByUsername(memberRequestDTO.getUsername())) {
+    public void saveMember(MemberRequestDTO memberRequestDTO) {
+        checkForDuplicateUsername(memberRequestDTO.getUsername());
+        checkForDuplicateEmail(memberRequestDTO.getEmail());
+        checkForDuplicatePhoneNumber(memberRequestDTO.getPhoneNumber());
+
+        Members member = new Members();
+        member.setUsername(memberRequestDTO.getUsername());
+        member.setEmail(memberRequestDTO.getEmail());
+        member.setPassword(memberRequestDTO.getPassword());
+        member.setPhoneNumber(memberRequestDTO.getPhoneNumber());
+        member.setAddress(memberRequestDTO.getAddress());
+        member.setRole(Members.Role.MEMBER);
+
+        membersRepository.save(member);
+    }
+
+    private void checkForDuplicateUsername(String username) {
+        if (membersRepository.existsByUsername(username)) {
             throw new DuplicateUsernameException(ErrorMessage.DUPLICATE_USERNAME.getMessage());
         }
+    }
 
-        // 이메일 중복 체크
-        if (membersRepository.existsByEmail(memberRequestDTO.getEmail())) {
+    private void checkForDuplicateEmail(String email) {
+        if (membersRepository.existsByEmail(email)) {
             throw new DuplicateEmailException(ErrorMessage.DUPLICATE_EMAIL.getMessage());
         }
+    }
 
-        // 전화번호 중복 체크
-        if (membersRepository.existsByPhoneNumber(memberRequestDTO.getPhoneNumber())) {
+    private void checkForDuplicatePhoneNumber(String phoneNumber) {
+        if (membersRepository.existsByPhoneNumber(phoneNumber)) {
             throw new DuplicatePhoneNumberException(ErrorMessage.DUPLICATE_PHONE_NUMBER.getMessage());
-        }
-        {
-            Members member = new Members();
-            member.setUsername(memberRequestDTO.getUsername());
-            member.setEmail(memberRequestDTO.getEmail());
-            member.setPassword(memberRequestDTO.getPassword());
-            member.setPhoneNumber(memberRequestDTO.getPhoneNumber());
-            member.setAddress(memberRequestDTO.getAddress());
-            member.setRole(Members.Role.MEMBER);
-
-            membersRepository.save(member);
         }
     }
 
